@@ -339,9 +339,9 @@
         <div class="chat-messages" id="chatMessages"></div>
         <div class="quick-chips">
           <button class="chip" onclick="quickSend('Looks good, ready to roll.')">Ready to Train</button>
-          <button class="chip" onclick="quickSend('Trained yesterday with a friend and didn\'t log it. What should we do today?')">Trained Yesterday</button>
+          <button class="chip" onclick="quickSend('Trained yesterday with a friend and did not log it. What should we do today?')">Trained Yesterday</button>
           <button class="chip" onclick="quickSend('Feeling tired today, scale back the volume or load by 10%.')">Low Energy: Scale 10%</button>
-          <button class="chip" onclick="quickSend('My physio gave me an update on knee loading. Let\'s review our split.')">Physio Update</button>
+          <button class="chip" onclick="quickSend('My physio gave me an update on knee loading. Let us review our split.')">Physio Update</button>
         </div>
         <div class="chat-input-row">
           <input type="text" id="chatInput" class="chat-input" placeholder="Talk with coach or report set..." onkeydown="if(event.key==='Enter') sendChat()">
@@ -356,7 +356,7 @@
         <div class="section-title">Current Overload Strategy</div>
         <ul style="font-size:13px; line-height:1.5; color:#3A3A3C; padding-left:18px;">
           <li><strong>Bench Press:</strong> Hold 62.5 kg until all sets are clean with a solid pause.</li>
-          <li><strong>Pull-ups:</strong> 4 sets of 4 reps with strict 5-second descent to dead hang.</li>
+          <li><strong>Pull-ups:</strong> Progress repetition volume with strict 5-second descent to dead hang.</li>
           <li><strong>Overhead Press:</strong> Build to 4x8 at 20 kg per dumbbell before advancing.</li>
           <li><strong>Close-Grip Bench:</strong> Hold at 55 kg to solidify triceps lockout pattern.</li>
           <li><strong>Face Pulls:</strong> Bump to 14 kg with thumbs pointing backward.</li>
@@ -382,10 +382,7 @@
         <strong>Safety & Form Cue:</strong>
         <p id="mExCue" style="margin-top:4px; color:#48484A;"></p>
       </div>
-      <div style="display:flex; gap:10px;">
-        <button class="btn-primary" style="flex:1; background:#8E8E93;" onclick="adjustModalWeight(-2.5)">-2.5 kg</button>
-        <button class="btn-primary" style="flex:1;" onclick="adjustModalWeight(2.5)">+2.5 kg</button>
-      </div>
+      <div style="display:flex; gap:10px;" id="modalAdjustButtons"></div>
     </div>
   </div>
 
@@ -425,11 +422,11 @@
           name: "Day A: Bench & Vert Pull",
           exercises: [
             { id: "a1", name: "Barbell Flat Bench Press", sets: 4, reps: "5", weight: 62.5, unit: "kg", cue: "Solidify groove at 62.5 kg before advancing. 1 to 2 RIR.", checked: false, sessions: 14, history: [55, 57.5, 60, 60, 62.5] },
-            { id: "a2", name: "Negative (Eccentric) Pull-ups", sets: 4, reps: "4", weight: 0, unit: "kg", cue: "0-1-5 tempo: 5-second controlled descent to dead hang.", checked: false, sessions: 12, history: [0, 0, 0, 0, 0] },
+            { id: "a2", name: "Negative (Eccentric) Pull-ups", sets: 4, reps: 4, weight: 0, unit: "reps", cue: "0-1-5 tempo: 5-second controlled descent to dead hang.", checked: false, sessions: 12, history: [2, 3, 4, 4] },
             { id: "a3", name: "Incline Dumbbell Press (30°)", sets: 3, reps: "10", weight: 20, unit: "kg/db", cue: "Elbows tucked 45 to 60 degrees. 2 RIR.", checked: false, sessions: 11, history: [16, 18, 18, 20, 20] },
             { id: "a4", name: "Seated Lat Pulldown", sets: 3, reps: "8-10", weight: 40, unit: "kg", cue: "Pause 1 sec at collarbone, 3-sec eccentric, strict 3 sets only.", checked: false, sessions: 10, history: [35, 35, 37.5, 40] },
             { id: "a5", name: "Seated Cable Face Pulls", sets: 3, reps: "15", weight: 14, unit: "kg", cue: "Bump load to 14 kg, thumbs pointing backward at peak.", checked: false, sessions: 13, history: [10, 11, 12.5, 14] },
-            { id: "a6", name: "Physio Leg Press Encore", sets: 3, reps: "10", weight: 0, unit: "pyramid", cue: "ACL Rehab: Strict 90° max, zero valgus collapse, only with pre-workout carbs.", checked: false, sessions: 6, history: [0, 0, 0, 0] }
+            { id: "a6", name: "Physio Leg Press Encore", sets: 3, reps: 10, weight: 0, unit: "pyramid", cue: "ACL Rehab: Strict 90° max, zero valgus collapse, only with pre-workout carbs.", checked: false, sessions: 6, history: [10, 10, 10, 10] }
           ]
         },
         {
@@ -437,11 +434,11 @@
           name: "Day B: OHP & Horiz Pull",
           exercises: [
             { id: "b1", name: "Seated Overhead Dumbbell Press", sets: 4, reps: "7-8", weight: 20, unit: "kg/db", cue: "Back flat to upright bench, work up towards 8 reps per set.", checked: false, sessions: 10, history: [16, 18, 18, 20] },
-            { id: "b2", name: "Strict Chin-ups", sets: 4, reps: "3", weight: 0, unit: "kg", cue: "Supinated grip, full dead hang, focus on speed of pull.", checked: false, sessions: 12, history: [0, 0, 0, 0, 0] },
+            { id: "b2", name: "Strict Chin-ups", sets: 4, reps: 3, weight: 0, unit: "reps", cue: "Supinated grip, full dead hang, focus on speed of pull.", checked: false, sessions: 12, history: [1, 2, 3, 3] },
             { id: "b3", name: "Close-Grip Bench Press", sets: 3, reps: "8", weight: 55, unit: "kg", cue: "Grip inside shoulder width, elbows tucked, hold at 55 kg.", checked: false, sessions: 9, history: [47.5, 50, 52.5, 55] },
             { id: "b4", name: "Seated Cable Row (Neutral)", sets: 3, reps: "12", weight: 40, unit: "kg", cue: "Pull to lower navel, hold scapular squeeze for 1 second.", checked: false, sessions: 10, history: [32.5, 35, 37.5, 40] },
             { id: "b5", name: "Seated DB Lateral Raises", sets: 3, reps: "15", weight: 8, unit: "kg/db", cue: "Lead with elbows, pause at parallel, lock in 8 kg.", checked: false, sessions: 11, history: [6, 7, 7, 8] },
-            { id: "b6", name: "Physio Leg Press Encore", sets: 3, reps: "10", weight: 0, unit: "pyramid", cue: "Execute only with physio clearance and proper pre-workout fuel.", checked: false, sessions: 6, history: [0, 0, 0, 0] }
+            { id: "b6", name: "Physio Leg Press Encore", sets: 3, reps: 10, weight: 0, unit: "pyramid", cue: "Execute only with physio clearance and proper pre-workout fuel.", checked: false, sessions: 6, history: [10, 10, 10, 10] }
           ]
         }
       ]
@@ -449,6 +446,19 @@
 
     let program = JSON.parse(localStorage.getItem("lift_program")) || INITIAL_PROGRAM;
     program.athleteName = "Ludger";
+
+    // Auto-migrate any existing pullup/chinup units to 'reps' if stored under old schema
+    program.workouts.forEach(w => {
+      w.exercises.forEach(e => {
+        if (e.name.toLowerCase().includes("pull-up") || e.name.toLowerCase().includes("chin-up")) {
+          e.unit = "reps";
+          if (!e.history || e.history.every(v => v === 0)) {
+            e.history = [2, 3, 3, typeof e.reps === 'number' ? e.reps : parseInt(e.reps) || 3];
+          }
+        }
+      });
+    });
+
     let apiKey = localStorage.getItem("gemini_api_key") || "";
     let chatConversation = JSON.parse(localStorage.getItem("chat_conversation")) || [];
     let activeModalEx = null;
@@ -487,7 +497,7 @@
 
     function triggerMorningBrief() {
       const w = currentWorkout();
-      const brief = `Hi Ludger, welcome back! Based on your rotation, today is **${w.name}**. I have loaded your targets in kg above. All set to roll, or do we need to adjust?`;
+      const brief = `Hi Ludger, welcome back! Based on your rotation, today is **${w.name}**. I have loaded your targets above. All set to roll, or do we need to adjust?`;
       appendCoachMsg(brief);
     }
 
@@ -534,23 +544,34 @@
       const w = currentWorkout();
       document.getElementById('workoutHeading').innerText = w.name;
       const list = document.getElementById('exerciseList');
-      list.innerHTML = w.exercises.map(ex => `
-        <div class="exercise-row" onclick="openExModal('${ex.id}')">
-          <div class="exercise-left">
-            <div class="checkbox ${ex.checked ? 'checked' : ''}" onclick="toggleCheck(event, '${ex.id}')">
-              ${ex.checked ? '✓' : ''}
+      list.innerHTML = w.exercises.map(ex => {
+        let displayTarget = '';
+        if (ex.unit === 'reps') {
+          displayTarget = `${ex.reps} reps (BW)`;
+        } else if (ex.unit === 'pyramid') {
+          displayTarget = 'Pyramid';
+        } else {
+          displayTarget = `${ex.weight} ${ex.unit}`;
+        }
+
+        return `
+          <div class="exercise-row" onclick="openExModal('${ex.id}')">
+            <div class="exercise-left">
+              <div class="checkbox ${ex.checked ? 'checked' : ''}" onclick="toggleCheck(event, '${ex.id}')">
+                ${ex.checked ? '✓' : ''}
+              </div>
+              <div>
+                <div class="ex-name">${ex.name}</div>
+                <div class="ex-sub">${ex.sets} sets × ${ex.reps} reps</div>
+              </div>
             </div>
-            <div>
-              <div class="ex-name">${ex.name}</div>
-              <div class="ex-sub">${ex.sets} sets × ${ex.reps} reps</div>
+            <div class="ex-target">
+              <div class="ex-weight">${displayTarget}</div>
+              <div class="ex-rir">Target</div>
             </div>
           </div>
-          <div class="ex-target">
-            <div class="ex-weight">${ex.weight > 0 ? ex.weight + ' ' + ex.unit : (ex.unit === 'pyramid' ? 'Pyramid' : 'Bodyweight')}</div>
-            <div class="ex-rir">Target Load</div>
-          </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     function toggleCheck(e, id) {
@@ -573,9 +594,31 @@
       const ex = w.exercises.find(x => x.id === id);
       if (!ex) return;
       activeModalEx = ex;
+
       document.getElementById('mExName').innerText = ex.name;
-      document.getElementById('mExTarget').innerText = `${ex.sets} sets × ${ex.reps} reps @ ${ex.weight} ${ex.unit}`;
+      
+      let targetText = `${ex.sets} sets × ${ex.reps} reps`;
+      if (ex.unit === 'reps') {
+        targetText += " (Bodyweight Reps)";
+      } else if (ex.unit !== 'pyramid') {
+        targetText += ` @ ${ex.weight} ${ex.unit}`;
+      }
+      document.getElementById('mExTarget').innerText = targetText;
       document.getElementById('mExCue').innerText = ex.cue;
+
+      const btnBox = document.getElementById('modalAdjustButtons');
+      if (ex.unit === 'reps') {
+        btnBox.innerHTML = `
+          <button class="btn-primary" style="flex:1; background:#8E8E93;" onclick="adjustModalValue(-1)">-1 Rep</button>
+          <button class="btn-primary" style="flex:1;" onclick="adjustModalValue(1)">+1 Rep</button>
+        `;
+      } else {
+        btnBox.innerHTML = `
+          <button class="btn-primary" style="flex:1; background:#8E8E93;" onclick="adjustModalValue(-2.5)">-2.5 kg</button>
+          <button class="btn-primary" style="flex:1;" onclick="adjustModalValue(2.5)">+2.5 kg</button>
+        `;
+      }
+
       document.getElementById('exModal').classList.remove('hidden');
     }
 
@@ -583,11 +626,21 @@
       document.getElementById('exModal').classList.add('hidden');
     }
 
-    function adjustModalWeight(delta) {
+    function adjustModalValue(delta) {
       if (!activeModalEx) return;
-      activeModalEx.weight = Math.max(0, activeModalEx.weight + delta);
-      if (!activeModalEx.history) activeModalEx.history = [activeModalEx.weight];
-      activeModalEx.history.push(activeModalEx.weight);
+
+      if (activeModalEx.unit === 'reps') {
+        let currentReps = typeof activeModalEx.reps === 'number' ? activeModalEx.reps : parseInt(activeModalEx.reps) || 4;
+        currentReps = Math.max(1, currentReps + delta);
+        activeModalEx.reps = currentReps;
+        if (!activeModalEx.history) activeModalEx.history = [currentReps];
+        activeModalEx.history.push(currentReps);
+      } else {
+        activeModalEx.weight = Math.max(0, (activeModalEx.weight || 0) + delta);
+        if (!activeModalEx.history) activeModalEx.history = [activeModalEx.weight];
+        activeModalEx.history.push(activeModalEx.weight);
+      }
+
       saveProgram();
       renderWorkout();
       renderProgression();
@@ -602,9 +655,14 @@
       const sorted = [...all].sort((a, b) => (b.sessions || 0) - (a.sessions || 0));
 
       container.innerHTML = sorted.map(ex => {
-        const pts = (ex.history && ex.history.length > 1) ? ex.history : [ex.weight || 20, ex.weight || 20];
-        const min = Math.min(...pts) - 2.5;
-        const max = Math.max(...pts) + 2.5;
+        const isReps = ex.unit === 'reps';
+        const unitLabel = isReps ? 'reps' : (ex.unit === 'pyramid' ? 'reps' : ex.unit);
+        
+        const fallback = isReps ? (parseInt(ex.reps) || 3) : (ex.weight || 20);
+        const pts = (ex.history && ex.history.length > 1) ? ex.history : [fallback, fallback];
+        
+        const min = Math.min(...pts) - (isReps ? 1 : 2.5);
+        const max = Math.max(...pts) + (isReps ? 1 : 2.5);
         const width = 300;
         const height = 55;
         const svgPoints = pts.map((val, idx) => {
@@ -624,8 +682,8 @@
                 <polyline fill="none" stroke="#007AFF" stroke-width="2.5" points="${svgPoints}" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
               <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--subtext); margin-top:4px;">
-                <span>Start: ${pts[0]} ${ex.unit}</span>
-                <span style="color:var(--text); font-weight:700;">Current: ${pts[pts.length - 1]} ${ex.unit}</span>
+                <span>Start: ${pts[0]} ${unitLabel}</span>
+                <span style="color:var(--text); font-weight:700;">Current: ${pts[pts.length - 1]} ${unitLabel}</span>
               </div>
             </div>
           </div>
@@ -678,21 +736,27 @@
           program.workouts = parsed.workouts.map(w => ({
             workout_id: w.workout_id,
             name: w.name,
-            exercises: w.exercises.map((e, idx) => ({
-              id: w.workout_id + '_' + (e.order || idx),
-              name: e.name,
-              sets: e.next_session_target ? (e.next_session_target.sets || e.target_sets || 3) : (e.target_sets || 3),
-              reps: e.next_session_target ? (e.next_session_target.reps || e.target_reps || "8") : (e.target_reps || "8"),
-              weight: e.next_session_target ? (e.next_session_target.weight_kg !== undefined ? e.next_session_target.weight_kg : 0) : 0,
-              unit: e.load_descriptor && e.load_descriptor.includes('dumbbell') ? 'kg/db' : 'kg',
-              cue: (e.next_session_target && e.next_session_target.notes) || e.form_cues || e.protocol || "Maintain controlled tempo.",
-              checked: false,
-              sessions: e.recent_performance ? (e.recent_performance.completed_sets || 8) : 8,
-              history: [
-                (e.next_session_target && e.next_session_target.weight_kg ? e.next_session_target.weight_kg - 5 : 20),
-                (e.next_session_target && e.next_session_target.weight_kg !== undefined ? e.next_session_target.weight_kg : 20)
-              ]
-            }))
+            exercises: w.exercises.map((e, idx) => {
+              const isBodyweight = e.name.toLowerCase().includes("pull-up") || e.name.toLowerCase().includes("chin-up");
+              const repsVal = e.next_session_target ? (e.next_session_target.reps || e.target_reps || 4) : (e.target_reps || 4);
+              const numReps = parseInt(repsVal) || 4;
+
+              return {
+                id: w.workout_id + '_' + (e.order || idx),
+                name: e.name,
+                sets: e.next_session_target ? (e.next_session_target.sets || e.target_sets || 3) : (e.target_sets || 3),
+                reps: isBodyweight ? numReps : (e.next_session_target ? (e.next_session_target.reps || e.target_reps || "8") : (e.target_reps || "8")),
+                weight: isBodyweight ? 0 : (e.next_session_target && e.next_session_target.weight_kg !== undefined ? e.next_session_target.weight_kg : 0),
+                unit: isBodyweight ? 'reps' : (e.load_descriptor && e.load_descriptor.includes('dumbbell') ? 'kg/db' : 'kg'),
+                cue: (e.next_session_target && e.next_session_target.notes) || e.form_cues || e.protocol || "Maintain controlled tempo.",
+                checked: false,
+                sessions: e.recent_performance ? (e.recent_performance.completed_sets || 8) : 8,
+                history: isBodyweight ? [Math.max(1, numReps - 1), numReps] : [
+                  (e.next_session_target && e.next_session_target.weight_kg ? e.next_session_target.weight_kg - 5 : 20),
+                  (e.next_session_target && e.next_session_target.weight_kg !== undefined ? e.next_session_target.weight_kg : 20)
+                ]
+              };
+            })
           }));
           saveProgram();
           renderSplitTabs();
@@ -736,13 +800,12 @@ Strict Rules:
 - Never exceed 90-degree knee flexion angle.
 - Zero knee valgus collapse (knees track over 2nd/3rd toes).
 - 1 to 2 RIR on all compound lifts. Never train to failure.
-- All loads and weights strictly in kg.
+- Weights strictly in kg. Pull-up and Chin-up progressions strictly in reps.
 Current Program Context: ${JSON.stringify(program)}
 
 You have two jobs:
 1. Converse naturally as an experienced strength coach. Answer questions, give biomechanical feedback, suggest substitutions, or scale volume if fatigued.
-2. If Ludger wants to change workouts, add Day C or Day D, switch days, or modify weights, you can execute this by appending a JSON command at the very end of your response inside an <ACTION> tag.
-Format for ACTION tag:
+2. If Ludger wants to change workouts, add Day C or Day D, switch days, or modify weights/reps, append an action tag at the very end of your response:
 <ACTION>
 {"action": "SWITCH_WORKOUT", "workout_id": "day_b"}
 or
@@ -750,22 +813,52 @@ or
 </ACTION>
 Keep prose coaching clear, supportive, and practical in 2 to 4 sentences. Do not use em-dashes.`;
 
-        const contents = chatConversation.slice(-8).map(m => ({
-          role: m.role === 'coach' ? 'model' : 'user',
-          parts: [{ text: m.text }]
-        }));
+        // Filter and format conversation history so the first element is ALWAYS a user turn
+        const apiContents = [];
+        const recentMessages = chatConversation.slice(-10);
+
+        for (const m of recentMessages) {
+          const role = m.role === 'coach' ? 'model' : 'user';
+          // Gemini API requires first turn in contents to have role 'user'
+          if (apiContents.length === 0 && role !== 'user') {
+            continue;
+          }
+          // Avoid duplicate consecutive roles
+          if (apiContents.length > 0 && apiContents[apiContents.length - 1].role === role) {
+            apiContents[apiContents.length - 1].parts[0].text += "\n" + m.text;
+          } else {
+            apiContents.push({
+              role: role,
+              parts: [{ text: m.text }]
+            });
+          }
+        }
+
+        // Guarantee at least the current user turn is sent
+        if (apiContents.length === 0) {
+          apiContents.push({
+            role: 'user',
+            parts: [{ text: val }]
+          });
+        }
 
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${apiKey}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             systemInstruction: { parts: [{ text: systemInstruction }] },
-            contents: contents
+            contents: apiContents
           })
         });
 
         const data = await response.json();
-        if (data.candidates && data.candidates[0].content.parts[0].text) {
+
+        if (data.error) {
+          appendCoachMsg(`API Error (${data.error.code}): ${data.error.message}`);
+          return;
+        }
+
+        if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
           let text = data.candidates[0].content.parts[0].text;
           
           const actionMatch = text.match(/<ACTION>([\s\S]*?)<\/ACTION>/);
@@ -789,11 +882,11 @@ Keep prose coaching clear, supportive, and practical in 2 to 4 sentences. Do not
 
           appendCoachMsg(text);
         } else {
-          appendCoachMsg("Received empty response from coach. Please try again.");
+          appendCoachMsg("Received empty response from coach. Please check connection.");
         }
       } catch (err) {
         console.error(err);
-        appendCoachMsg("Connection issue contacting Gemini 2.5 Pro. Verify your API key or network connection.");
+        appendCoachMsg("Connection issue contacting Gemini 2.5 Pro: " + err.message);
       }
     }
 
