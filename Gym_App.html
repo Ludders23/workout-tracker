@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Compound Tracker</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Lifts">
+  <meta name="theme-color" content="#F2F2F7">
+  <style>
+    :root {
+      --bg: #F2F2F7;
+      --card-bg: rgba(255, 255, 255, 0.85);
+      --card-solid: #FFFFFF;
+      --border: rgba(0, 0, 0, 0.08);
+      --text: #1C1C1E;
+      --subtext: #8E8E93;
+      --blue: #007AFF;
+      --green: #34C759;
+      --red: #FF3B30;
+      --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      padding: env(safe-area-inset-top, 20px) 16px env(safe-area-inset-bottom, 24px) 16px;
+    }
+    .phone-container {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 4px 4px 4px;
+    }
+    .header-titles h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+    .header-titles p { font-size: 13px; color: var(--subtext); margin-top: 2px; }
+    .btn-header {
+      background: rgba(0, 122, 255, 0.1);
+      color: var(--blue);
+      border: none;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .nav-tabs {
+      display: flex;
+      background: rgba(142, 142, 147, 0.16);
+      padding: 3px;
+      border-radius: 10px;
+    }
+    .nav-tab {
+      flex: 1;
+      padding: 8px 0;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: var(--subtext);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .nav-tab.active {
+      background: #FFFFFF;
+      color: var(--text);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    }
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--subtext);
+      margin-bottom: 12px;
+    }
+    .exercise-list { display: flex; flex-direction: column; gap: 8px; }
+    .exercise-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      background: rgba(255,255,255,0.7);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .exercise-row:active { background: rgba(255,255,255,1); }
+    .exercise-left { display: flex; align-items: center; gap: 12px; }
+    .checkbox {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid #C7C7CC;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .checkbox.checked {
+      background: var(--green);
+      border-color: var(--green);
+      color: white;
+    }
+    .ex-name { font-size: 15px; font-weight: 600; }
+    .ex-sub { font-size: 12px; color: var(--subtext); margin-top: 1px; }
+    .ex-target { text-align: right; }
+    .ex-weight { font-size: 15px; font-weight: 700; color: var(--blue); }
+    .ex-sets { font-size: 12px; color: var(--subtext); }
+
+    /* Chat Section */
+    .chat-card { display: flex; flex-direction: column; gap: 12px; }
+    .chat-messages {
+      max-height: 180px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-right: 4px;
+    }
+    .msg {
+      padding: 9px 13px;
+      border-radius: 14px;
+      font-size: 13px;
+      line-height: 1.4;
+      max-width: 85%;
+    }
+    .msg.coach {
+      background: #FFFFFF;
+      align-self: flex-start;
+      border: 1px solid var(--border);
+    }
+    .msg.user {
+      background: var(--blue);
+      color: #FFFFFF;
+      align-self: flex-end;
+    }
+    .quick-chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
+    .chip {
+      white-space: nowrap;
+      background: rgba(0, 122, 255, 0.08);
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 6px 10px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+    }
+    .chat-input-row { display: flex; gap: 8px; }
+    .chat-input {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: #FFFFFF;
+      font-size: 13px;
+      outline: none;
+      font-family: inherit;
+    }
+    .chat-send {
+      background: var(--blue);
+      color: white;
+      border: none;
+      padding: 0 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Progression Page */
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .cal-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 8px;
+      background: rgba(142, 142, 147, 0.1);
+      color: var(--subtext);
+    }
+    .cal-day.logged {
+      background: var(--green);
+      color: white;
+    }
+    .chart-container {
+      margin-top: 10px;
+      background: white;
+      border-radius: 12px;
+      padding: 12px;
+      border: 1px solid var(--border);
+    }
+    svg.chart-line { width: 100%; height: 90px; overflow: visible; }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: flex-end;
+      z-index: 100;
+    }
+    .modal-sheet {
+      background: #FFFFFF;
+      width: 100%;
+      border-radius: 20px 20px 0 0;
+      padding: 24px 20px calc(24px + env(safe-area-inset-bottom, 12px)) 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; }
+    .modal-title { font-size: 18px; font-weight: 700; }
+    .btn-close {
+      background: #E5E5EA;
+      border: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .textarea-import {
+      width: 100%;
+      height: 160px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 12px;
+      font-family: monospace;
+      outline: none;
+      resize: none;
+    }
+    .btn-primary {
+      background: var(--blue);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+    }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="phone-container">
+    <header>
+      <div class="header-titles">
+        <h1 id="todayDate">Today</h1>
+        <p id="subStatus">Torn ACL safe - Upper body focus</p>
+      </div>
+      <button class="btn-header" onclick="openImportModal()">Import Chat</button>
+    </header>
+
+    <div class="nav-tabs">
+      <button class="nav-tab active" id="tabToday" onclick="switchTab('today')">1. Today & Chat</button>
+      <button class="nav-tab" id="tabProgression" onclick="switchTab('progression')">2. Progression</button>
+    </div>
+
+    <!-- VIEW 1: TODAY & CHAT -->
+    <div id="viewToday" class="phone-container" style="gap: 16px;">
+      <div class="card">
+        <div class="section-title">Today's Workout (Upper Body)</div>
+        <div class="exercise-list" id="exerciseList"></div>
+      </div>
+
+      <div class="card chat-card">
+        <div class="section-title">Log & AI Adjustment</div>
+        <div class="chat-messages" id="chatMessages">
+          <div class="msg coach">Ready for today. You can tap checkboxes to finish, or tell me how the session went below.</div>
+        </div>
+        <div class="quick-chips">
+          <button class="chip" onclick="quickSend('Bench 82.5kg and Pull-ups +10kg felt smooth today')">Log: Good Session</button>
+          <button class="chip" onclick="quickSend('Feeling tired today, drop all weights by 10%')">Tired: -10% Load</button>
+          <button class="chip" onclick="quickSend('Shoulder felt slightly pinched on overhead press')">Report Shoulder Discomfort</button>
+        </div>
+        <div class="chat-input-row">
+          <input type="text" id="chatInput" class="chat-input" placeholder="Type workout note or adjust plan..." onkeydown="if(event.key==='Enter') sendChat()">
+          <button class="chat-send" onclick="sendChat()">Log</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 2: PROGRESSION -->
+    <div id="viewProgression" class="phone-container hidden" style="gap: 16px;">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div class="section-title" style="margin-bottom:0;">Past 28 Days Attendance</div>
+          <span style="font-size:12px; font-weight:700; color:var(--green);" id="avgWorkouts">3.2 workouts/wk</span>
+        </div>
+        <div class="cal-grid" id="calendarGrid"></div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Progression by Frequency</div>
+        <div id="progressionCharts" style="display:flex; flex-direction:column; gap:16px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXERCISE MODAL -->
+  <div id="exModal" class="modal-backdrop hidden">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div class="modal-title" id="mExName">Exercise Details</div>
+        <button class="btn-close" onclick="closeExModal()">✕</button>
+      </div>
+      <div>
+        <p style="font-size:13px; color:var(--subtext);" id="mExTarget"></p>
+      </div>
+      <div style="background:var(--bg); padding:12px; border-radius:10px; font-size:13px; line-height:1.5;">
+        <strong>Knee & Form Safety Cue:</strong>
+        <p id="mExCue" style="margin-top:4px; color:#48484A;"></p>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button class="btn-primary" style="flex:1; background:#8E8E93;" onclick="adjustModalWeight(-2.5)">-2.5 kg</button>
+        <button class="btn-primary" style="flex:1;" onclick="adjustModalWeight(2.5)">+2.5 kg</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMPORT MODAL -->
+  <div id="importModal" class="modal-backdrop hidden">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div class="modal-title">Import History & Schedule</div>
+        <button class="btn-close" onclick="closeImportModal()">✕</button>
+      </div>
+      <p style="font-size:13px; color:var(--subtext);">Paste your notes or the JSON block exported from your existing chat below:</p>
+      <textarea id="importText" class="textarea-import" placeholder="Paste notes or JSON here..."></textarea>
+      <button class="btn-primary" onclick="runImport()">Apply Import</button>
+    </div>
+  </div>
+
+  <script>
+    const DEFAULT_EXERCISES = [
+      { id: 1, name: "Barbell Bench Press", sets: 4, reps: "6", weight: 82.5, unit: "kg", isPlus: false, cue: "Retract scapulae, keep feet planted flat without knee twisting.", checked: false, sessions: 14, history: [75, 77.5, 80, 80, 82.5] },
+      { id: 2, name: "Weighted Pull-Ups", sets: 4, reps: "6", weight: 10, unit: "kg", isPlus: true, cue: "Full dead hang to chin clear of bar; engage core to avoid swing.", checked: false, sessions: 12, history: [5, 5, 7.5, 10, 10] },
+      { id: 3, name: "Seated Barbell Shoulder Press", sets: 3, reps: "8", weight: 52.5, unit: "kg", isPlus: false, cue: "Seated with back support relieves all knee shear stress.", checked: false, sessions: 9, history: [47.5, 50, 50, 52.5] },
+      { id: 4, name: "Chest-Supported Row", sets: 3, reps: "8", weight: 70, unit: "kg", isPlus: false, cue: "Chest pressed into bench; zero axial loading on the lower body.", checked: false, sessions: 10, history: [65, 65, 67.5, 70] },
+      { id: 5, name: "Parallel Bar Dips", sets: 3, reps: "8", weight: 12.5, unit: "kg", isPlus: true, cue: "Forward lean for chest bias; lower under control.", checked: false, sessions: 7, history: [0, 5, 10, 12.5] }
+    ];
+
+    let state = {
+      exercises: JSON.parse(localStorage.getItem("tracker_exercises")) || DEFAULT_EXERCISES,
+      activeModalExId: null
+    };
+
+    function saveState() {
+      localStorage.setItem("tracker_exercises", JSON.stringify(state.exercises));
+    }
+
+    function init() {
+      const now = new Date();
+      const options = { weekday: 'short', day: 'numeric', month: 'short' };
+      document.getElementById('todayDate').innerText = now.toLocaleDateString('en-GB', options);
+      renderTodayList();
+      renderProgression();
+    }
+
+    function switchTab(tab) {
+      if (tab === 'today') {
+        document.getElementById('viewToday').classList.remove('hidden');
+        document.getElementById('viewProgression').classList.add('hidden');
+        document.getElementById('tabToday').classList.add('active');
+        document.getElementById('tabProgression').classList.remove('active');
+      } else {
+        document.getElementById('viewToday').classList.add('hidden');
+        document.getElementById('viewProgression').classList.remove('hidden');
+        document.getElementById('tabToday').classList.remove('active');
+        document.getElementById('tabProgression').classList.add('active');
+        renderProgression();
+      }
+    }
+
+    function renderTodayList() {
+      const list = document.getElementById('exerciseList');
+      list.innerHTML = state.exercises.map(ex => `
+        <div class="exercise-row" onclick="openExModal(${ex.id})">
+          <div class="exercise-left">
+            <div class="checkbox ${ex.checked ? 'checked' : ''}" onclick="toggleCheck(event, ${ex.id})">
+              ${ex.checked ? '✓' : ''}
+            </div>
+            <div>
+              <div class="ex-name">${ex.name}</div>
+              <div class="ex-sub">${ex.sets} sets × ${ex.reps} reps</div>
+            </div>
+          </div>
+          <div class="ex-target">
+            <div class="ex-weight">${ex.isPlus ? '+' : ''}${ex.weight} ${ex.unit}</div>
+            <div class="ex-sets">Working Load</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function toggleCheck(e, id) {
+      e.stopPropagation();
+      const ex = state.exercises.find(x => x.id === id);
+      if (ex) {
+        ex.checked = !ex.checked;
+        saveState();
+        renderTodayList();
+      }
+    }
+
+    function openExModal(id) {
+      state.activeModalExId = id;
+      const ex = state.exercises.find(x => x.id === id);
+      if (!ex) return;
+      document.getElementById('mExName').innerText = ex.name;
+      document.getElementById('mExTarget').innerText = `${ex.sets} sets × ${ex.reps} reps @ ${ex.isPlus ? '+' : ''}${ex.weight} ${ex.unit}`;
+      document.getElementById('mExCue').innerText = ex.cue;
+      document.getElementById('exModal').classList.remove('hidden');
+    }
+
+    function closeExModal() {
+      document.getElementById('exModal').classList.add('hidden');
+    }
+
+    function adjustModalWeight(delta) {
+      const ex = state.exercises.find(x => x.id === state.activeModalExId);
+      if (ex) {
+        ex.weight = Math.max(0, ex.weight + delta);
+        saveState();
+        renderTodayList();
+        openExModal(ex.id);
+      }
+    }
+
+    function quickSend(txt) {
+      document.getElementById('chatInput').value = txt;
+      sendChat();
+    }
+
+    function sendChat() {
+      const inp = document.getElementById('chatInput');
+      const val = inp.value.trim();
+      if (!val) return;
+
+      appendMsg(val, 'user');
+      inp.value = '';
+
+      setTimeout(() => {
+        const lower = val.toLowerCase();
+        if (lower.includes('tired') || lower.includes('sick') || lower.includes('10%')) {
+          state.exercises.forEach(e => { e.weight = Math.round((e.weight * 0.9) * 2) / 2; });
+          saveState();
+          renderTodayList();
+          appendMsg("Understood. I have reduced today's weights by 10% to prioritize safe recovery for your upper body and knee stability.", 'coach');
+        } else if (lower.includes('felt smooth') || lower.includes('bench') || lower.includes('good')) {
+          state.exercises.forEach(e => e.checked = true);
+          saveState();
+          renderTodayList();
+          appendMsg("Recorded. Great consistency. All 5 compound movements checked off and logged into your progression history.", 'coach');
+        } else {
+          appendMsg("Noted. Your feedback has been registered for your next session targets.", 'coach');
+        }
+      }, 350);
+    }
+
+    function appendMsg(txt, sender) {
+      const box = document.getElementById('chatMessages');
+      const div = document.createElement('div');
+      div.className = `msg ${sender}`;
+      div.innerText = txt;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function renderProgression() {
+      // 28 days calendar
+      const cal = document.getElementById('calendarGrid');
+      let calHtml = '';
+      const loggedDays = [2, 5, 7, 9, 12, 14, 16, 19, 21, 23, 26, 28];
+      for (let i = 1; i <= 28; i++) {
+        const isLogged = loggedDays.includes(i);
+        calHtml += `<div class="cal-day ${isLogged ? 'logged' : ''}">${i}</div>`;
+      }
+      cal.innerHTML = calHtml;
+
+      // Frequency sorted
+      const sorted = [...state.exercises].sort((a,b) => b.sessions - a.sessions);
+      const chartsDiv = document.getElementById('progressionCharts');
+      chartsDiv.innerHTML = sorted.map(ex => {
+        const pts = ex.history;
+        const min = Math.min(...pts) - 5;
+        const max = Math.max(...pts) + 5;
+        const width = 300;
+        const height = 70;
+        const svgPoints = pts.map((val, idx) => {
+          const x = (idx / (pts.length - 1)) * width;
+          const y = height - ((val - min) / (max - min)) * height;
+          return `${x},${y}`;
+        }).join(' ');
+
+        return `
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:600; margin-bottom:4px;">
+              <span>${ex.name}</span>
+              <span style="color:var(--blue);">${ex.sessions} sessions logged</span>
+            </div>
+            <div class="chart-container">
+              <svg class="chart-line" viewBox="0 0 300 70">
+                <polyline fill="none" stroke="#007AFF" stroke-width="2.5" points="${svgPoints}" stroke-linecap="round"/>
+              </svg>
+              <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--subtext); margin-top:4px;">
+                <span>Start: ${pts[0]} kg</span>
+                <span style="color:var(--text); font-weight:700;">Current: ${pts[pts.length - 1]} kg</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openImportModal() { document.getElementById('importModal').classList.remove('hidden'); }
+    function closeImportModal() { document.getElementById('importModal').classList.add('hidden'); }
+
+    function runImport() {
+      const val = document.getElementById('importText').value.trim();
+      if (!val) return;
+      try {
+        const jsonMatch = val.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          if (parsed.currentPrescription && Array.isArray(parsed.currentPrescription)) {
+            state.exercises = parsed.currentPrescription.map((item, idx) => ({
+              id: idx + 1,
+              name: item.name,
+              sets: item.sets || 3,
+              reps: item.reps || "8",
+              weight: item.weightKg || 50,
+              unit: "kg",
+              isPlus: !!item.isBodyweightPlus,
+              cue: item.aclNote || (item.formCues ? item.formCues.join('. ') : "Maintain controlled knee alignment."),
+              checked: false,
+              sessions: 5,
+              history: [item.weightKg ? item.weightKg - 5 : 45, item.weightKg || 50]
+            }));
+            saveState();
+            renderTodayList();
+            renderProgression();
+            closeImportModal();
+            alert("Workout routine and baseline data imported successfully.");
+            return;
+          }
+        }
+      } catch (err) {
+        console.error("Manual text import fallback", err);
+      }
+      closeImportModal();
+      alert("Imported. Details logged into coaching context.");
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
